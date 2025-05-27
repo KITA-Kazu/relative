@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語文法クイズアプリ - 関係詞</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-color: #f0f7ff;
+            margin: 0;
+            color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #0056b3;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #0056b3;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #hud {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #question-category {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            min-height: 50px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        #choices-container button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            background-color: #6c757d;
+            padding: 12px;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        #choices-container button:hover {
+            background-color: #5a6268;
+        }
+
+        #choices-container button.correct {
+            background-color: #28a745 !important;
+        }
+
+        #choices-container button.incorrect {
+            background-color: #dc3545 !important;
+        }
+
+        #hint-area {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #hint-button {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        #hint-button:hover {
+            background-color: #e0a800;
+        }
+
+        #hint-text {
+            font-size: 15px;
+            color: #007bff;
+            background-color: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            min-height: 24px;
+            font-weight: bold;
+        }
+
+        #result-screen p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        #result-screen #final-score {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+
+        #result-screen #feedback-message {
+            font-size: 18px;
+            color: #28a745;
+            margin-bottom: 25px;
+        }
+
+
+        #result-screen #all-questions-review {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 2px solid #007bff;
+            padding-top: 25px;
+        }
+
+        .review-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .review-item p {
+            margin: 8px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .review-q-number {
+            font-weight: bold;
+            color: #0056b3;
+            font-size: 16px;
+        }
+
+        .review-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .review-user-answer, .review-correct-answer {
+            padding-left: 10px;
+        }
+
+        .review-user-answer.correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .review-user-answer.incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .review-correct-answer {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .review-explanation {
+            color: #495057;
+            margin-top: 10px;
+            font-size: 14px;
+            background-color: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>英語文法チャレンジ！- 関係詞編</h1>
+
+        <div id="start-screen">
+            <h2>大学入試レベル英語クイズ</h2>
+            <p>関係詞の問題に挑戦！</p>
+            <p>制限時間は60秒。正解で+10点、不正解で-5点。</p>
+            <button id="start-button">クイズ開始</button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div id="hud">
+                <div id="timer">時間: 60</div>
+                <div id="score">スコア: 0</div>
+            </div>
+            <div id="question-category">カテゴリ: </div>
+            <div id="question-text">ここに問題文が表示されます。</div>
+            <div id="choices-container">
+                <!-- 選択肢ボタンはJSで生成 -->
+            </div>
+            <div id="hint-area">
+                <button id="hint-button">ヒント (和訳)</button>
+                <p id="hint-text" class="hidden"></p>
+            </div>
+            <div id="feedback"></div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h2>結果発表</h2>
+            <p id="final-score">あなたのスコアは: 0 点でした。</p>
+            <p id="feedback-message"></p>
+            <button id="restart-button">もう一度挑戦する</button>
+            <div id="all-questions-review" class="hidden">
+                <h3>出題された問題と解説</h3>
+                <div id="review-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allQuestions = [
+            // --- カテゴリ: 関係詞 (全84問) ---
+            {
+                category: "関係詞",
+                question: "I have a friend ( ) lives in New York.",
+                options: ["when", "who", "how", "which"],
+                answer: "who",
+                translation: "私にはニューヨークに住んでいる友達がいます。",
+                explanation: "先行詞 'a friend' (人) を主格の関係代名詞で修飾します。'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "The man ( ) bought the watch is from China.",
+                options: ["whom", "which", "who", "whose"],
+                answer: "who",
+                translation: "その時計を買った男性は中国出身です。",
+                explanation: "先行詞 'The man' (人) を主格の関係代名詞で修飾します。'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "New York is a city ( ) is popular with tourists.",
+                options: ["where", "when", "how", "which"],
+                answer: "which",
+                translation: "ニューヨークは観光客に人気のある都市です。",
+                explanation: "先行詞 'a city' (物・事) を主格の関係代名詞で修飾します。'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Take a look at the house ( ) roof is blue.",
+                options: ["that", "in which", "whose", "which"],
+                answer: "whose",
+                translation: "屋根が青い家を見てください。",
+                explanation: "先行詞 'the house' の所有物 (roof) を示す所有格の関係代名詞 'whose' が適切です。'whose roof' = 'the roof of which'。"
+            },
+            {
+                category: "関係詞",
+                question: "That is the boy ( ) we met the other day.",
+                options: ["which", "where", "there", "who"],
+                answer: "who",
+                translation: "あれは私たちが先日会った少年です。",
+                explanation: "先行詞 'the boy' (人) を目的格の関係代名詞で修飾します。'who' または 'whom' が使えますが、口語では 'who' がよく用いられます。"
+            },
+            {
+                category: "関係詞",
+                question: "Last week, I went to see a movie with Sally and the seats ( ) we had reserved were really good.",
+                options: ["where", "which", "when", "what"],
+                answer: "which",
+                translation: "先週、サリーと映画を見に行きましたが、私たちが予約していた席は本当に良かったです。",
+                explanation: "先行詞 'the seats' (物) を目的格の関係代名詞で修飾します。'which' (または 'that') が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Mexico is the largest country ( ) Spanish is spoken.",
+                options: ["that", "which", "in that", "in which"],
+                answer: "in which",
+                translation: "メキシコはスペイン語が話されている最大の国です。",
+                explanation: "先行詞 'the largest country' を修飾し、「その国では」という意味なので 'in which' (= where) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "This is a famous poem ( ) I do not understand the meaning.",
+                options: ["whose", "which", "of that", "of which"],
+                answer: "of which",
+                translation: "これは私がその意味を理解できない有名な詩です。",
+                explanation: "'the meaning of the poem' という関係なので、'of which' (the meaning of which) が適切です。'whose meaning' も可能です。"
+            },
+            {
+                category: "関係詞",
+                question: "That person is the one ( ) I think rescued the kitten.",
+                options: ["whom", "who", "what", "where"],
+                answer: "who",
+                translation: "あの人は私が子猫を救ったと思う人です。",
+                explanation: "先行詞 'the one' (人) を修飾します。'I think' は挿入節で、関係代名詞は 'rescued the kitten' の主語なので主格の 'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Yuka gave me the name of the hotel ( ) she was staying.",
+                options: ["which", "when", "where", "why"],
+                answer: "where",
+                translation: "ユカは彼女が滞在していたホテルの名前を私に教えてくれました。",
+                explanation: "先行詞 'the hotel' (場所) を修飾し、「そのホテルに」という意味なので関係副詞 'where' (= in which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "When I went to the U.S. last summer, I visited the house ( ) George Washington lived.",
+                options: ["that", "what", "which", "where"],
+                answer: "where",
+                translation: "去年の夏アメリカに行った時、ジョージ・ワシントンが住んでいた家を訪れました。",
+                explanation: "先行詞 'the house' (場所) を修飾し、「その家に」という意味なので関係副詞 'where' (= in which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Do you remember the day ( ) we first met Paul?",
+                options: ["when", "where", "which", "whom"],
+                answer: "when",
+                translation: "私たちが初めてポールに会った日を覚えていますか。",
+                explanation: "先行詞 'the day' (時) を修飾し、「その日に」という意味なので関係副詞 'when' (= on which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "A car crashed into a tree just a few meters away from ( ) we were standing.",
+                options: ["when", "where", "what", "which"],
+                answer: "where",
+                translation: "私たちが立っていた場所からほんの数メートル離れたところで、車が木に衝突しました。",
+                explanation: "前置詞 'from' の目的語となる名詞節を導き、「私たちが立っていた場所」という意味なので関係副詞 'where' を使います。"
+            },
+            {
+                category: "関係詞",
+                question: "I want to know the reason ( ) you did that.",
+                options: ["how", "what", "which", "why"],
+                answer: "why",
+                translation: "あなたがそれをした理由を知りたいです。",
+                explanation: "先行詞 'the reason' (理由) を修飾するので関係副詞 'why' (= for which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "My friend John, ( ) lives in California, has a car with New York license plates.",
+                options: ["which", "that", "whose", "who"],
+                answer: "who",
+                translation: "私の友人ジョンはカリフォルニアに住んでいますが、ニューヨークのナンバープレートを付けた車を持っています。",
+                explanation: "先行詞 'My friend John' (人) を非制限用法で修飾する主格の関係代名詞 'who' が適切です。非制限用法では 'that' は使えません。"
+            },
+            {
+                category: "関係詞",
+                question: "\"There's a black cat in the kitchen!\" my roommate cried in the middle of the night, ( ) surprised me.",
+                options: ["that", "where", "when", "which"],
+                answer: "which",
+                translation: "「キッチンに黒猫がいる！」とルームメイトが夜中に叫びましたが、それが私を驚かせました。",
+                explanation: "前の文全体（ルームメイトが叫んだこと）を先行詞とする非制限用法の関係代名詞 'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "My student said he had done his homework, ( ) proved to be a lie.",
+                options: ["it", "that", "which", "what"],
+                answer: "which",
+                translation: "私の生徒は宿題をしたと言いましたが、それは嘘だと判明しました。",
+                explanation: "前の文全体（生徒が宿題をしたと言ったこと）を先行詞とする非制限用法の関係代名詞 'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "I was taking a bath last night, ( ) the lights suddenly went out.",
+                options: ["how", "why", "what", "when"],
+                answer: "when",
+                translation: "昨夜お風呂に入っていたら、突然電気が消えました。",
+                explanation: "前の節の状況「お風呂に入っていた」時に起こった出来事を続ける非制限用法の関係副詞 'when' です。「するとその時」のような意味になります。"
+            },
+            {
+                category: "関係詞",
+                question: "It was a very hot afternoon. We found a coffee shop, ( ) we rested for a while.",
+                options: ["where", "when", "which", "that"],
+                answer: "where",
+                translation: "とても暑い午後でした。私たちは喫茶店を見つけ、そこでしばらく休みました。",
+                explanation: "先行詞 'a coffee shop' (場所) を非制限用法で修飾する関係副詞 'where' です。「そしてそこで」のような意味になります。"
+            },
+            {
+                category: "関係詞",
+                question: "We have released several products recently, all of ( ) are selling well.",
+                options: ["what", "they", "which", "such"],
+                answer: "which",
+                translation: "私たちは最近いくつかの製品を発売しましたが、それらはすべてよく売れています。",
+                explanation: "'all of which' の形で、先行詞 'several products' を指します。'which' は関係代名詞です。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) John said yesterday is probably true.",
+                options: ["Which", "Where", "What", "When"],
+                answer: "What",
+                translation: "ジョンが昨日言ったことはおそらく本当です。",
+                explanation: "関係代名詞 'What' は「～すること/もの」という意味の名詞節を導き、この文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) is important is to keep early hours.",
+                options: ["Whether", "What", "That", "Which"],
+                answer: "What",
+                translation: "重要なことは早寝早起きをすることです。",
+                explanation: "関係代名詞 'What' は「～すること/もの」という意味の名詞節を導き、この文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "Your future depends on ( ) you do in the present.",
+                options: ["what", "however", "that", "whether"],
+                answer: "what",
+                translation: "あなたの未来は現在あなたが何をするかにかかっています。",
+                explanation: "前置詞 'on' の目的語となる名詞節を導く関係代名詞 'what' (～すること/もの) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "John is not ( ) he used to be.",
+                options: ["that", "when", "which", "what"],
+                answer: "what",
+                translation: "ジョンは以前の彼ではありません。",
+                explanation: "関係代名詞 'what' を用いた慣用表現 'A is not what A used to be' (Aは以前のAではない) です。"
+            },
+            {
+                category: "関係詞",
+                question: "She gave me ( ) little money she had.",
+                options: ["which", "what", "whether", "whose"],
+                answer: "what",
+                translation: "彼女は持っていたほんのわずかなお金を私にくれました。",
+                explanation: "関係代名詞 'what' は 'what little money' の形で「少ないながらもすべての～」という意味を表します。"
+            },
+            {
+                category: "関係詞",
+                question: "Takashi knows so many words in English. He's ( ) we call a walking dictionary.",
+                options: ["what", "why", "that", "which"],
+                answer: "what",
+                translation: "タカシは英語の単語をとてもたくさん知っています。彼はいわゆる生き字引です。",
+                explanation: "関係代名詞 'what' を用いた慣用表現 'what we call A' (いわゆるA) です。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) passes the final interview next week will get the job.",
+                options: ["Whose", "Whoever", "Whom", "Who"],
+                answer: "Whoever",
+                translation: "来週の最終面接に合格する人は誰でもその仕事を得るでしょう。",
+                explanation: "複合関係代名詞 'Whoever' (～する人は誰でも) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "Help yourself to ( ) food there is in the refrigerator.",
+                options: ["whenever", "whatever", "wherever", "whoever"],
+                answer: "whatever",
+                translation: "冷蔵庫にある食べ物は何でも自由に取って食べてください。",
+                explanation: "複合関係代名詞 'whatever' (～するものは何でも) が 'food' を修飾しています。'whatever food' で「どんな食べ物でも」。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) happens, you can rely on my friendship.",
+                options: ["Whenever", "Whoever", "However", "Whatever"],
+                answer: "Whatever",
+                translation: "何が起ころうとも、私の友情を頼りにしていいですよ。",
+                explanation: "複合関係代名詞 'Whatever' (何が～しようとも) が譲歩の副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "I try to see my family ( ) I have free time.",
+                options: ["whenever", "whatever", "however", "whichever"],
+                answer: "whenever",
+                translation: "暇な時はいつでも家族に会うようにしています。",
+                explanation: "複合関係副詞 'whenever' (～する時はいつでも) が時を表す副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "Your parents will support and love you, ( ) you go.",
+                options: ["wherever", "somewhere", "there", "whatever"],
+                answer: "wherever",
+                translation: "あなたがどこへ行こうとも、ご両親はあなたを支え愛してくれるでしょう。",
+                explanation: "複合関係副詞 'wherever' (どこへ～しようとも) が譲歩の副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "Children should not have more money ( ) is needed.",
+                options: ["but", "because", "than", "it"],
+                answer: "than",
+                translation: "子供たちは必要以上のお金を持つべきではありません。",
+                explanation: "比較級 'more ... than ～' の形で、'than' の後に関係代名詞の主格 (who/which/thatの代用) が使われることがあります。「必要とされる以上のお金」。"
+            },
+            {
+                category: "関係詞",
+                question: "I fell asleep when I tried to do my homework in bed last night, ( ) is often the case.",
+                options: ["when", "for", "as", "what"],
+                answer: "as",
+                translation: "昨夜ベッドで宿題をしようとしたら寝てしまいましたが、それはよくあることです。",
+                explanation: "関係代名詞 'as' は、前の文全体を先行詞として「～なのだが、それは」という意味の非制限用法で使われます。'as is often the case' は「よくあることだが」。"
+            },
+            {
+                category: "関係詞",
+                question: "My brother has a girlfriend ( ) can play the piano well.",
+                options: ["when", "who", "which", "whom"],
+                answer: "who",
+                translation: "私の兄にはピアノを上手に弾けるガールフレンドがいます。",
+                explanation: "先行詞 'a girlfriend' (人) を主格の関係代名詞で修飾します。'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "I know a man ( ) speaks five languages.",
+                options: ["when", "who", "why", "which"],
+                answer: "who",
+                translation: "私は5ヶ国語を話す男性を知っています。",
+                explanation: "先行詞 'a man' (人) を主格の関係代名詞で修飾します。'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "The woman ( ) helped me was very kind.",
+                options: ["which", "whose", "who", "where"],
+                answer: "who",
+                translation: "私を助けてくれた女性はとても親切でした。",
+                explanation: "先行詞 'The woman' (人) を主格の関係代名詞で修飾します。'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "The teacher ( ) teaches math is very strict.",
+                options: ["who", "what", "when", "which"],
+                answer: "who",
+                translation: "数学を教えている先生はとても厳しいです。",
+                explanation: "先行詞 'The teacher' (人) を主格の関係代名詞で修飾します。'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Kyoto is a city ( ) many foreign people visit.",
+                options: ["where", "what", "which", "when"],
+                answer: "which",
+                translation: "京都は多くの外国人が訪れる都市です。",
+                explanation: "先行詞 'a city' (物・事) を目的格の関係代名詞で修飾します。'visit a city' なので 'which' (または 'that') が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Tokyo is a place ( ) offers both modern and traditional culture.",
+                options: ["what", "which", "who", "when"],
+                answer: "which",
+                translation: "東京は現代文化と伝統文化の両方を提供する場所です。",
+                explanation: "先行詞 'a place' (物・事) を主格の関係代名詞で修飾します。'which' (または 'that') が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "The boy ( ) bike was stolen is crying.",
+                options: ["who", "which", "whose", "that"],
+                answer: "whose",
+                translation: "自転車を盗まれた少年は泣いています。",
+                explanation: "先行詞 'The boy' の所有物 (bike) を示す所有格の関係代名詞 'whose' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "I met a man ( ) daughter studies in the U.S.",
+                options: ["who", "whom", "whose", "which"],
+                answer: "whose",
+                translation: "私は娘さんがアメリカに留学している男性に会いました。",
+                explanation: "先行詞 'a man' の所有物 (daughter) を示す所有格の関係代名詞 'whose' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "She's the girl ( ) won the speech contest.",
+                options: ["that", "who", "what", "whom"],
+                answer: "who",
+                translation: "彼女がスピーチコンテストで優勝した女の子です。",
+                explanation: "先行詞 'the girl' (人) を主格の関係代名詞で修飾します。'who' または 'that' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Do you know the man ( ) spoke to me?",
+                options: ["which", "who", "when", "why"],
+                answer: "who",
+                translation: "私に話しかけてきた男性を知っていますか。",
+                explanation: "先行詞 'the man' (人) を主格の関係代名詞で修飾します。'who' (または 'that') が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "The book ( ) he recommended was interesting.",
+                options: ["which", "where", "why", "who"],
+                answer: "which",
+                translation: "彼が推薦した本は面白かったです。",
+                explanation: "先行詞 'The book' (物) を目的格の関係代名詞で修飾します。'which' (または 'that') が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "The photos ( ) she took are amazing.",
+                options: ["who", "which", "what", "where"],
+                answer: "which",
+                translation: "彼女が撮った写真は素晴らしいです。",
+                explanation: "先行詞 'The photos' (物) を目的格の関係代名詞で修飾します。'which' (または 'that') が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "This is the school ( ) I studied English.",
+                options: ["that", "where", "in which", "which"],
+                answer: "in which",
+                translation: "ここは私が英語を勉強した学校です。",
+                explanation: "先行詞 'the school' (場所) を修飾し、「その学校で」という意味なので 'in which' または関係副詞 'where' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "They visited the museum ( ) the painting is displayed.",
+                options: ["in which", "which", "that", "what"],
+                answer: "in which",
+                translation: "彼らはその絵画が展示されている美術館を訪れました。",
+                explanation: "先行詞 'the museum' (場所) を修飾し、「その美術館で」という意味なので 'in which' または関係副詞 'where' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "He told me a story ( ) I remember little.",
+                options: ["of which", "which", "what", "that"],
+                answer: "of which",
+                translation: "彼は私に話をしましたが、その話のことはほとんど覚えていません。",
+                explanation: "'little of the story' という関係なので、'of which' (little of which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "This is a movie ( ) the ending is sad.",
+                options: ["of that", "whose", "of which", "what"],
+                answer: "whose",
+                translation: "これはエンディングが悲しい映画です。",
+                explanation: "先行詞 'a movie' の所有物 (the ending) を示すので 'whose ending' または 'the ending of which' となり、それぞれ 'whose' または 'of which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "She is the girl ( ) I believe is a genius.",
+                options: ["who", "whom", "which", "that"],
+                answer: "who",
+                translation: "彼女は私が天才だと信じている女の子です。",
+                explanation: "先行詞 'the girl' (人) を修飾します。'I believe' は挿入節で、関係代名詞は 'is a genius' の主語なので主格の 'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "He’s the man ( ) I guess knows the answer.",
+                options: ["who", "which", "what", "when"],
+                answer: "who",
+                translation: "彼が私が答えを知っていると思う男性です。",
+                explanation: "先行詞 'the man' (人) を修飾します。'I guess' は挿入節で、関係代名詞は 'knows the answer' の主語なので主格の 'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "I remember the restaurant ( ) we had lunch.",
+                options: ["where", "which", "when", "that"],
+                answer: "where",
+                translation: "私たちが昼食をとったレストランを覚えています。",
+                explanation: "先行詞 'the restaurant' (場所) を修飾し、「そのレストランで」という意味なので関係副詞 'where' (= in which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "That’s the school ( ) I met my best friend.",
+                options: ["where", "which", "what", "who"],
+                answer: "where",
+                translation: "そこが私が親友に出会った学校です。",
+                explanation: "先行詞 'the school' (場所) を修飾し、「その学校で」という意味なので関係副詞 'where' (= at which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "This is the park ( ) we used to play as kids.",
+                options: ["where", "what", "which", "when"],
+                answer: "where",
+                translation: "ここは私たちが子供の頃よく遊んだ公園です。",
+                explanation: "先行詞 'the park' (場所) を修飾し、「その公園で」という意味なので関係副詞 'where' (= in which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "I visited the town ( ) my grandparents were born.",
+                options: ["which", "when", "where", "that"],
+                answer: "where",
+                translation: "私は祖父母が生まれた町を訪れました。",
+                explanation: "先行詞 'the town' (場所) を修飾し、「その町で」という意味なので関係副詞 'where' (= in which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "I still remember the day ( ) I graduated.",
+                options: ["what", "when", "where", "which"],
+                answer: "when",
+                translation: "私は卒業した日を今でも覚えています。",
+                explanation: "先行詞 'the day' (時) を修飾し、「その日に」という意味なので関係副詞 'when' (= on which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Do you know the time ( ) the train arrives?",
+                options: ["which", "that", "when", "where"],
+                answer: "when",
+                translation: "電車が到着する時間を知っていますか。",
+                explanation: "先行詞 'the time' (時) を修飾し、「その時間に」という意味なので関係副詞 'when' (= at which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "He built a cabin near ( ) the river bends.",
+                options: ["when", "where", "that", "which"],
+                answer: "where",
+                translation: "彼は川が曲がっている場所の近くに小屋を建てました。",
+                explanation: "前置詞 'near' の目的語となる名詞節を導き、「川が曲がっている場所」という意味なので関係副詞 'where' を使います。"
+            },
+            {
+                category: "関係詞",
+                question: "That’s the bench ( ) we sat last summer.",
+                options: ["what", "where", "when", "which"],
+                answer: "where",
+                translation: "あれは私たちが去年の夏座ったベンチです。",
+                explanation: "先行詞 'the bench' (場所) を修飾し、「そのベンチに」という意味なので関係副詞 'where' (= on which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Nobody knows the reason ( ) she left early.",
+                options: ["which", "why", "that", "what"],
+                answer: "why",
+                translation: "彼女が早く帰った理由を誰も知りません。",
+                explanation: "先行詞 'the reason' (理由) を修飾するので関係副詞 'why' (= for which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Can you tell me the reason ( ) he was angry?",
+                options: ["why", "how", "which", "when"],
+                answer: "why",
+                translation: "彼が怒っていた理由を教えてくれますか。",
+                explanation: "先行詞 'the reason' (理由) を修飾するので関係副詞 'why' (= for which) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "My uncle, ( ) lives in Canada, is coming to visit.",
+                options: ["who", "whom", "what", "which"],
+                answer: "who",
+                translation: "カナダに住んでいる私の叔父が訪ねてきます。",
+                explanation: "先行詞 'My uncle' (人) を非制限用法で修飾する主格の関係代名詞 'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "Sarah, ( ) is my classmate, is very kind.",
+                options: ["whose", "which", "who", "what"],
+                answer: "who",
+                translation: "私のクラスメートであるサラはとても親切です。",
+                explanation: "先行詞 'Sarah' (人) を非制限用法で修飾する主格の関係代名詞 'who' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "He told me a joke, ( ) made me laugh.",
+                options: ["which", "that", "when", "how"],
+                answer: "which",
+                translation: "彼は私に冗談を言いましたが、それが私を笑わせました。",
+                explanation: "先行詞 'a joke' または前の節全体を指す非制限用法の関係代名詞 'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "She lost her wallet, ( ) was unfortunate.",
+                options: ["what", "which", "when", "why"],
+                answer: "which",
+                translation: "彼女は財布を失くしましたが、それは不運でした。",
+                explanation: "前の文全体（財布を失くしたこと）を先行詞とする非制限用法の関係代名詞 'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "He gave an excuse, ( ) I didn't believe.",
+                options: ["what", "which", "why", "that"],
+                answer: "which",
+                translation: "彼は言い訳をしましたが、私はそれを信じませんでした。",
+                explanation: "先行詞 'an excuse' (物) を非制限用法で修飾する目的格の関係代名詞 'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "She apologized, ( ) surprised everyone.",
+                options: ["which", "when", "that", "who"],
+                answer: "which",
+                translation: "彼女は謝罪しましたが、それが皆を驚かせました。",
+                explanation: "前の文全体（彼女が謝罪したこと）を先行詞とする非制限用法の関係代名詞 'which' が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "We were eating dinner ( ) the phone rang.",
+                options: ["when", "what", "which", "why"],
+                answer: "when",
+                translation: "私たちが夕食を食べていると電話が鳴りました。",
+                explanation: "前の節の状況「夕食を食べていた」時に起こった出来事を続ける接続詞的な 'when' です。非制限用法の関係副詞 'when' に近い働きです。"
+            },
+            {
+                category: "関係詞",
+                question: "He was studying ( ) the power failed.",
+                options: ["when", "how", "where", "what"],
+                answer: "when",
+                translation: "彼が勉強していると停電しました。",
+                explanation: "前の節の状況「勉強していた」時に起こった出来事を続ける接続詞的な 'when' です。"
+            },
+            {
+                category: "関係詞",
+                question: "We went to a park, ( ) we saw fireworks.",
+                options: ["what", "where", "which", "why"],
+                answer: "where",
+                translation: "私たちは公園へ行き、そこで花火を見ました。",
+                explanation: "先行詞 'a park' (場所) を非制限用法で修飾する関係副詞 'where' です。"
+            },
+            {
+                category: "関係詞",
+                question: "He entered a room, ( ) everyone was waiting.",
+                options: ["which", "where", "when", "that"],
+                answer: "where",
+                translation: "彼が部屋に入ると、そこでは皆が待っていました。",
+                explanation: "先行詞 'a room' (場所) を非制限用法で修飾する関係副詞 'where' です。"
+            },
+            {
+                category: "関係詞",
+                question: "She has many friends, all of ( ) are musicians.",
+                options: ["whom", "which", "that", "who"],
+                answer: "whom",
+                translation: "彼女には多くの友人がいますが、その全員が音楽家です。",
+                explanation: "'all of whom' の形で、先行詞 'many friends' (人) を指します。'whom' は関係代名詞の目的格ですが、前置詞の後は目的格を用います。"
+            },
+            {
+                category: "関係詞",
+                question: "We bought some books, most of ( ) were expensive.",
+                options: ["which", "what", "that", "of"],
+                answer: "which",
+                translation: "私たちはいくつかの本を買いましたが、そのほとんどが高価でした。",
+                explanation: "'most of which' の形で、先行詞 'some books' (物) を指します。'which' は関係代名詞です。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) he told me surprised everyone.",
+                options: ["What", "Which", "That", "Why"],
+                answer: "What",
+                translation: "彼が私に言ったことは皆を驚かせました。",
+                explanation: "関係代名詞 'What' (～すること/もの) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) she did was amazing.",
+                options: ["That", "What", "Which", "Where"],
+                answer: "What",
+                translation: "彼女がしたことは素晴らしかったです。",
+                explanation: "関係代名詞 'What' (～すること/もの) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) matters most is honesty.",
+                options: ["What", "That", "Which", "Who"],
+                answer: "What",
+                translation: "最も重要なことは正直さです。",
+                explanation: "関係代名詞 'What' (～すること/もの) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) you need is a good rest.",
+                options: ["What", "Why", "That", "Where"],
+                answer: "What",
+                translation: "あなたが必要なのは十分な休息です。",
+                explanation: "関係代名詞 'What' (～すること/もの) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "Success depends on ( ) you choose to focus on.",
+                options: ["when", "what", "which", "that"],
+                answer: "what",
+                translation: "成功は何に集中することを選ぶかにかかっています。",
+                explanation: "前置詞 'on' の目的語となる名詞節を導く関係代名詞 'what' (～すること/もの) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "It all depends on ( ) happens tomorrow.",
+                options: ["what", "which", "when", "where"],
+                answer: "what",
+                translation: "全ては明日何が起こるかにかかっています。",
+                explanation: "前置詞 'on' の目的語となる名詞節を導く関係代名詞 'what' (～すること/もの) が適切です。"
+            },
+            {
+                category: "関係詞",
+                question: "This town is not ( ) it was ten years ago.",
+                options: ["what", "when", "why", "which"],
+                answer: "what",
+                translation: "この町は10年前のそれとは違います。",
+                explanation: "関係代名詞 'what' を用いた慣用表現 'A is not what A used to be' (Aは以前のAではない) です。"
+            },
+            {
+                category: "関係詞",
+                question: "She isn't ( ) I expected.",
+                options: ["who", "what", "that", "which"],
+                answer: "what",
+                translation: "彼女は私が期待していたような人ではありません。",
+                explanation: "関係代名詞 'what' (～するような人/もの) が補語となる名詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "He gave me ( ) little food he had.",
+                options: ["what", "which", "why", "that"],
+                answer: "what",
+                translation: "彼は持っていたほんのわずかな食料を私にくれました。",
+                explanation: "関係代名詞 'what' は 'what little food' の形で「少ないながらもすべての～」という意味を表します。"
+            },
+            {
+                category: "関係詞",
+                question: "They used ( ) energy was left.",
+                options: ["what", "which", "when", "who"],
+                answer: "what",
+                translation: "彼らは残っていたエネルギーをすべて使いました。",
+                explanation: "関係代名詞 'what' は 'what energy' の形で「ありったけのエネルギー」という意味を表します。"
+            },
+            {
+                category: "関係詞",
+                question: "This is ( ) we call teamwork.",
+                options: ["what", "why", "how", "that"],
+                answer: "what",
+                translation: "これがいわゆるチームワークです。",
+                explanation: "関係代名詞 'what' を用いた慣用表現 'what we call A' (いわゆるA) です。"
+            },
+            {
+                category: "関係詞",
+                question: "She’s ( ) we consider a genius.",
+                options: ["who", "that", "what", "which"],
+                answer: "what",
+                translation: "彼女はいわゆる天才です。",
+                explanation: "関係代名詞 'what' を用いた慣用表現 'what we consider A' (私たちがAとみなすもの/人) です。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) finishes first will get a prize.",
+                options: ["Whatever", "Whoever", "Whichever", "Who"],
+                answer: "Whoever",
+                translation: "最初に終える人は誰でも賞品をもらえます。",
+                explanation: "複合関係代名詞 'Whoever' (～する人は誰でも) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) makes a mistake will be responsible.",
+                options: ["Whoever", "Whose", "Who", "That"],
+                answer: "Whoever",
+                translation: "間違いを犯す人は誰でも責任を負います。",
+                explanation: "複合関係代名詞 'Whoever' (～する人は誰でも) が名詞節を導き、文の主語になっています。"
+            },
+            {
+                category: "関係詞",
+                question: "Take ( ) seat is available.",
+                options: ["wherever", "what", "whatever", "whichever"],
+                answer: "whichever",
+                translation: "空いている席ならどれでも取ってください。",
+                explanation: "複合関係代名詞 'whichever' (どちらの～でも) または 'whatever' (どんな～でも) が 'seat' を修飾します。選択肢が限られている場合は 'whichever' がより自然です。"
+            },
+            {
+                category: "関係詞",
+                question: "Use ( ) tools you need.",
+                options: ["whenever", "whatever", "whoever", "that"],
+                answer: "whatever",
+                translation: "必要な道具は何でも使ってください。",
+                explanation: "複合関係代名詞 'whatever' (どんな～でも) が 'tools' を修飾します。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) you do, do your best.",
+                options: ["What", "Whatever", "That", "How"],
+                answer: "Whatever",
+                translation: "何をするにしても、最善を尽くしなさい。",
+                explanation: "複合関係代名詞 'Whatever' (何を～しようとも) が譲歩の副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) she says, don’t believe her.",
+                options: ["What", "Whenever", "Whatever", "Whoever"],
+                answer: "Whatever",
+                translation: "彼女が何を言おうとも、信じてはいけません。",
+                explanation: "複合関係代名詞 'Whatever' (何を～しようとも) が譲歩の副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "Call me ( ) you need help.",
+                options: ["whatever", "whenever", "whichever", "wherever"],
+                answer: "whenever",
+                translation: "助けが必要な時はいつでも電話してください。",
+                explanation: "複合関係副詞 'whenever' (～する時はいつでも) が時を表す副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "Come visit me ( ) you like.",
+                options: ["when", "whenever", "what", "why"],
+                answer: "whenever",
+                translation: "好きな時にいつでも訪ねてきてください。",
+                explanation: "複合関係副詞 'whenever' (～する時はいつでも) が時を表す副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "I will support you ( ) you are.",
+                options: ["wherever", "whenever", "whatever", "which"],
+                answer: "wherever",
+                translation: "あなたがどこにいても、私はあなたをサポートします。",
+                explanation: "複合関係副詞 'wherever' (どこに～いようとも) が譲歩の副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "You’ll be safe ( ) you go.",
+                options: ["what", "wherever", "whichever", "when"],
+                answer: "wherever",
+                translation: "どこへ行ってもあなたは安全でしょう。",
+                explanation: "複合関係副詞 'wherever' (どこへ～しようとも) が譲歩の副詞節を導いています。"
+            },
+            {
+                category: "関係詞",
+                question: "He is taller ( ) I am.",
+                options: ["than", "that", "what", "who"],
+                answer: "than",
+                translation: "彼は私より背が高いです。",
+                explanation: "比較級 'taller than ～' の形です。'than' の後に関係代名詞が省略されていると解釈することもできます (than I am tall の tall が省略)。"
+            },
+            {
+                category: "関係詞",
+                question: "She speaks faster ( ) anyone else.",
+                options: ["than", "which", "what", "that"],
+                answer: "than",
+                translation: "彼女は他の誰よりも速く話します。",
+                explanation: "比較級 'faster than ～' の形です。"
+            },
+            {
+                category: "関係詞",
+                question: "He was late, ( ) usual.",
+                options: ["as", "when", "which", "what"],
+                answer: "as",
+                translation: "彼はいつものように遅刻しました。",
+                explanation: "慣用表現 'as usual' (いつものように) です。この 'as' は様態を表す接続詞と解釈できます。"
+            },
+            {
+                category: "関係詞",
+                question: "( ) you know, I like coffee.",
+                options: ["As", "That", "Which", "When"],
+                answer: "As",
+                translation: "ご存知の通り、私はコーヒーが好きです。",
+                explanation: "関係代名詞 'as' は、後の文全体を先行詞として「～のように、～の通り」という意味の非制限用法で使われます。'As you know' は「ご存知の通り」。"
+            }
+        ];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+
+        const timerDisplay = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score');
+        const questionCategoryDisplay = document.getElementById('question-category');
+        const questionTextDisplay = document.getElementById('question-text');
+        const choicesContainer = document.getElementById('choices-container');
+        const feedbackDisplay = document.getElementById('feedback');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const feedbackMessageDisplay = document.getElementById('feedback-message');
+
+        const hintButton = document.getElementById('hint-button');
+        const hintTextDisplay = document.getElementById('hint-text');
+        const allQuestionsReviewArea = document.getElementById('all-questions-review');
+        const reviewContainer = document.getElementById('review-container');
+
+        let currentQuestionIndex;
+        let score;
+        let timeLeft;
+        let timerInterval;
+        let shuffledQuestions = [];
+        let answeredQuestionsHistory = [];
+
+        const TIME_LIMIT = 60;
+        const CORRECT_SCORE = 10;
+        const INCORRECT_SCORE = -5;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startGame() {
+            if (!allQuestions || allQuestions.length === 0) {
+                console.error("問題データ (allQuestions) が空または未定義です。");
+                alert("問題データが読み込まれていません。コンソールを確認してください。");
+                return;
+            }
+
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            allQuestionsReviewArea.classList.add('hidden');
+            reviewContainer.innerHTML = "";
+
+            shuffledQuestions = shuffleArray([...allQuestions]);
+            answeredQuestionsHistory = [];
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = TIME_LIMIT;
+
+            scoreDisplay.textContent = `スコア: ${score}`;
+            timerDisplay.textContent = `時間: ${timeLeft}`;
+            feedbackDisplay.textContent = "";
+            hintTextDisplay.classList.add('hidden');
+            hintTextDisplay.textContent = "";
+
+            loadQuestion();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            timerDisplay.textContent = `時間: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= shuffledQuestions.length || timeLeft <= 0) {
+                endGame();
+                return;
+            }
+
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            questionCategoryDisplay.textContent = `カテゴリ: ${currentQuestion.category}`;
+            questionTextDisplay.textContent = currentQuestion.question;
+            choicesContainer.innerHTML = "";
+            hintTextDisplay.classList.add('hidden');
+            hintTextDisplay.textContent = "";
+            hintButton.disabled = false;
+
+            const choices = shuffleArray([...currentQuestion.options]);
+
+            choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.textContent = choice;
+                button.onclick = () => selectAnswer(choice, currentQuestion, button);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function showHint() {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            if (currentQuestion && currentQuestion.translation) {
+                hintTextDisplay.textContent = `${currentQuestion.translation}`;
+                hintTextDisplay.classList.remove('hidden');
+                hintButton.disabled = true;
+            }
+        }
+
+        function selectAnswer(selectedChoice, currentQuestion, button) {
+            const choiceButtons = choicesContainer.querySelectorAll('button');
+            choiceButtons.forEach(btn => btn.disabled = true);
+            hintButton.disabled = true;
+
+            let isCorrect = false;
+            if (selectedChoice === currentQuestion.answer) {
+                score += CORRECT_SCORE;
+                feedbackDisplay.textContent = "正解！ (+10点)";
+                feedbackDisplay.style.color = "green";
+                button.classList.add('correct');
+                isCorrect = true;
+            } else {
+                score += INCORRECT_SCORE;
+                feedbackDisplay.textContent = `不正解... (-5点) 正解は: ${currentQuestion.answer}`;
+                feedbackDisplay.style.color = "red";
+                button.classList.add('incorrect');
+                choiceButtons.forEach(btn => {
+                    if (btn.textContent === currentQuestion.answer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            scoreDisplay.textContent = `スコア: ${score}`;
+
+            answeredQuestionsHistory.push({
+                questionData: currentQuestion,
+                userAnswer: selectedChoice,
+                isCorrect: isCorrect
+            });
+
+            currentQuestionIndex++;
+
+            setTimeout(() => {
+                feedbackDisplay.textContent = "";
+                if (timeLeft > 0 && currentQuestionIndex < shuffledQuestions.length) {
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            }, 2000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScoreDisplay.textContent = `あなたのスコアは: ${score} 点でした。`;
+
+            let message = "";
+            const answeredCount = answeredQuestionsHistory.length;
+            let correctAnswers = 0;
+            answeredQuestionsHistory.forEach(item => {
+                if(item.isCorrect) correctAnswers++;
+            });
+
+            if (answeredCount > 0) {
+                const accuracy = (correctAnswers / answeredCount) * 100;
+                if (accuracy >= 80) {
+                    message = "素晴らしい！よくできました！";
+                } else if (accuracy >= 50) {
+                    message = "まずまずですね！もう少し頑張ろう！";
+                } else {
+                    message = "残念！復習して再挑戦しよう！";
+                }
+            } else {
+                if (timeLeft <= 0 && score === 0) {
+                     message = "時間切れです。もう一度挑戦してみましょう！";
+                } else {
+                    message = "お疲れ様でした！";
+                }
+            }
+            feedbackMessageDisplay.textContent = message;
+
+            displayAllQuestionsReview();
+        }
+
+        function displayAllQuestionsReview() {
+            if (answeredQuestionsHistory.length > 0) {
+                allQuestionsReviewArea.classList.remove('hidden');
+                reviewContainer.innerHTML = "";
+
+                answeredQuestionsHistory.forEach((item, index) => {
+                    const reviewItemDiv = document.createElement('div');
+                    reviewItemDiv.classList.add('review-item');
+
+                    const qNum = document.createElement('p');
+                    qNum.classList.add('review-q-number');
+                    qNum.textContent = `Q${index + 1}. (${item.questionData.category})`;
+                    reviewItemDiv.appendChild(qNum);
+
+                    const qText = document.createElement('p');
+                    qText.classList.add('review-question');
+                    qText.textContent = item.questionData.question;
+                    reviewItemDiv.appendChild(qText);
+
+                    const userAnswerText = document.createElement('p');
+                    userAnswerText.classList.add('review-user-answer');
+                    userAnswerText.innerHTML = `あなたの解答: <strong>${item.userAnswer}</strong>`;
+                    if (item.isCorrect) {
+                        userAnswerText.classList.add('correct');
+                    } else {
+                        userAnswerText.classList.add('incorrect');
+                    }
+                    reviewItemDiv.appendChild(userAnswerText);
+
+                    if (!item.isCorrect) {
+                        const correctAnswerText = document.createElement('p');
+                        correctAnswerText.classList.add('review-correct-answer');
+                        correctAnswerText.innerHTML = `正解: <strong>${item.questionData.answer}</strong>`;
+                        reviewItemDiv.appendChild(correctAnswerText);
+                    }
+
+                    if (item.questionData.translation) {
+                        const translationText = document.createElement('p');
+                        translationText.classList.add('review-explanation');
+                        translationText.innerHTML = `<em>問題文和訳: ${item.questionData.translation}</em>`;
+                        reviewItemDiv.appendChild(translationText);
+                    }
+
+                    const explanationText = document.createElement('p');
+                    explanationText.classList.add('review-explanation');
+                    explanationText.innerHTML = `<strong>解説:</strong> ${item.questionData.explanation || "解説はありません。"}`;
+                    reviewItemDiv.appendChild(explanationText);
+
+                    reviewContainer.appendChild(reviewItemDiv);
+                });
+            } else {
+                allQuestionsReviewArea.classList.add('hidden');
+            }
+        }
+
+        function initializeUI() {
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            allQuestionsReviewArea.classList.add('hidden');
+            hintTextDisplay.classList.add('hidden');
+            feedbackDisplay.textContent = "";
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        hintButton.addEventListener('click', showHint);
+
+        window.addEventListener('load', initializeUI);
+    </script>
+</body>
+</html>
